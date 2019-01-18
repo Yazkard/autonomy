@@ -42,7 +42,7 @@ class Node:
 
 class Graph:
     def __init__(self):
-        self.nodes = list()
+        self.nodes = dict()
         self.weights = {}
         self.distance_between = 0
 
@@ -50,7 +50,7 @@ class Graph:
         closest = None
         i = 0.5
         while closest is None:
-            for node in self.nodes:
+            for index, node in self.nodes.items():
                 x, y = node.tell_position()
                 if point.x-self.distance_between*i <= x <= point.x+self.distance_between*i and \
                         point.y-self.distance_between*i <= y <= point.y+self.distance_between*i:
@@ -70,10 +70,9 @@ class Graph:
         for y in range(1, size[0]+1):
             for x in range(1, size[1]+1):
                 new = Node(int((x-0.5)*self.distance_between), int((y-0.5)*self.distance_between))
-                self.nodes.append(new)
-        self.nodes = tuple(self.nodes)
-        for node in self.nodes:
-            sumx, sumy, sumxy, sumyx= 0, 0, 0, 0
+                self.nodes[(x, y)] = new
+        for index, node in self.nodes.items():
+            sumx, sumy, sumxy, sumyx = 0, 0, 0, 0
             for i in range(1, self.distance_between+1):
                 if node.position.x < map.shape[0]-self.distance_between:
                     sumx += map[node.position.x+i, node.position.y]
@@ -84,21 +83,18 @@ class Graph:
                 if node.position.x > self.distance_between and node.position.y < map.shape[1]-self.distance_between:
                     sumyx += map[node.position.x - i, node.position.y + i]
             if 0 < sumx < self.distance_between+1:
-                node.add_neighbour(self.find_closest(Point(node.position.x+self.distance_between, node.position.y)), 1.)
+                node.add_neighbour(self.nodes[(index[0]+1, index[1])], 1.)
             if 0 < sumy < self.distance_between+1:
-                node.add_neighbour(self.find_closest(Point(node.position.x, node.position.y+self.distance_between)), 1.)
+                node.add_neighbour(self.nodes[(index[0], index[1]+1)], 1.)
             if 0 < sumxy < self.distance_between+1:
-                node.add_neighbour(self.find_closest(Point(node.position.x+self.distance_between, node.position.y+self.distance_between)), 1.4)
+                node.add_neighbour(self.nodes[(index[0]+1, index[1]+1)], 1.4)
             if 0 < sumyx < self.distance_between+1:
-                node.add_neighbour(self.find_closest(Point(node.position.x-self.distance_between, node.position.y+self.distance_between)), 1.4)
+                node.add_neighbour(self.nodes[(index[0]-1, index[1]+1)], 1.4)
 
     def get_path(self, start, end):
         start_node = self.find_closest(start)
         end_node = self.find_closest(end)
         x = Djikstra.find_way(start_node, end_node)
         return x
-
-
-
 
 

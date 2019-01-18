@@ -25,7 +25,7 @@ for i in amounts:
     print(i)
     print(duration1)
     start2 = datetime.datetime.now()
-    x = graph.get_path(graph.nodes[0].position, Point(650, 350))
+    x = graph.get_path(Point(10, 10), Point(650, 350))
     duration2 = datetime.datetime.now() - start2
     print(duration2)
     print('-------------------------------------')
